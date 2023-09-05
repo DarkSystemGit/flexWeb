@@ -23,6 +23,8 @@ function processArgs(names) {
 }
 function convertObjectToDom(obj) {
     if (componentList.includes(`${obj.type.replace('.', '/')}.html`)) {
+        
+        var compHtml = fs.readFileSync(path.join(__dirname, '/components/', `${obj.type.replace('.', '/')}.html`)).toString()
         if(compHtml.split(' ')[0]=='@include'){
             try{
                 var include = compHtml.split('\n')[0].split(' ')[1]
@@ -30,12 +32,11 @@ function convertObjectToDom(obj) {
             }catch(e){}
            
         }
-        if(fs.existsSync(path.join(__dirname, '/components/', `${path.dirname(obj.type.replace('.', '/'))}/${include}.js`))){
-            var processor =require(path.join(__dirname, '/components/', `${path.dirname(obj.type.replace('.', '/'))}/${include}.js`))
+        if(fs.existsSync(path.join(__dirname, '/components/', `${include}.js`))){
+            var processor =require(path.join(__dirname, '/components/', `${include}.js`))
             compHtml = processor(compHtml,obj)[0]
             obj = processor(compHtml,obj)[1]
         }
-        var compHtml = fs.readFileSync(path.join(__dirname, '/components/', `${obj.type.replace('.', '/')}.html`)).toString()
         for (var i = 0; Object.keys(obj).length > i; i++) {
             if (!(Object.keys(obj)[i] == 'type')) {
                 compHtml = compHtml.replaceAll('${' + Object.keys(obj)[i] + '}', obj[Object.keys(obj)[i]])
