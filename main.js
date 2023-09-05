@@ -30,7 +30,9 @@ function convertObjectToDom(obj) {
            
         }
         if(fs.existsSync(path.join(__dirname, '/components/', `${path.dirname(obj.type.replace('.', '/'))}/${include}.js`))){
-            compHtml =require(path.join(__dirname, '/components/', `${path.dirname(obj.type.replace('.', '/'))}/${include}.js`))(compHtml,obj)
+            var processor =require(path.join(__dirname, '/components/', `${path.dirname(obj.type.replace('.', '/'))}/${include}.js`))
+            compHtml = processor(compHtml,obj)[0]
+            obj = processor(compHtml,obj)[1]
         }
         var compHtml = fs.readFileSync(path.join(__dirname, '/components/', `${obj.type.replace('.', '/')}.html`)).toString()
         for (var i = 0; Object.keys(obj).length > i; i++) {
