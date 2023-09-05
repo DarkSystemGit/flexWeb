@@ -26,6 +26,7 @@ function convertObjectToDom(obj) {
         if(compHtml.split(' ')[0]=='@include'){
             try{
                 var include = compHtml.split('\n')[0].split(' ')[1]
+                compHtml = compHtml.replaceAll(compHtml.split('\n')[0],'')
             }catch(e){}
            
         }
