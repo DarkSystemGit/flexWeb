@@ -22,7 +22,7 @@ function processArgs(names){
     return args
 }
 function convertObjectToDom(obj){
-    if(componentList.includes(`${obj.type}.html`)){
+    if(componentList.includes(`${obj.type.replace('.','/')}.html`)){
         var compHtml = fs.readFileSync(path.join(__dirname,'/components/',`${obj.type}.html`)).toString()
         for(var i=0;Object.keys(obj).length>i;i++){
             if(!(Object.keys(obj)[i]=='type')){

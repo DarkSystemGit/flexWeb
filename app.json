@@ -4,13 +4,8 @@
         "type":"root",
         "children":[
             {
-                "type":"settingsPage",
-                "children":[
-                    {
-                        "type":"importPage",
-                        "src":"devkit/containers.html"
-                    }
-                ]
+                "type":"text",
+                "text":"This page was created with flexWeb"
             }
         ]
     }
