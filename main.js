@@ -23,7 +23,7 @@ function processArgs(names){
 }
 function convertObjectToDom(obj){
     if(componentList.includes(`${obj.type.replace('.','/')}.html`)){
-        var compHtml = fs.readFileSync(path.join(__dirname,'/components/',`${obj.type}.html`)).toString()
+        var compHtml = fs.readFileSync(path.join(__dirname,'/components/',`${obj.type.replace('.','/')}.html`)).toString()
         for(var i=0;Object.keys(obj).length>i;i++){
             if(!(Object.keys(obj)[i]=='type')){
                 compHtml =compHtml.replaceAll('${'+Object.keys(obj)[i]+'}',obj[Object.keys(obj)[i]])
@@ -90,7 +90,27 @@ function genChildren(parent){
     })
     return resolveDependencies(children.join(''))
 }
+function processImports(html){
+    let dom = new JSDOM('<!DOCTYPE html><html><head id="head"></head><body id="__main"></body></html>')
+    var scriptElms = document.getElementsByTagName('script')
+    var styleElms = document.getElementsByTagName('link')
+    var importElms =[]
+    scriptElms.forEach(elm=>{
+        if(elm.src){
+            importElms.push(elm)
+        }
+    })
+    styleElms.forEach(elm=>{
+        if(elm.rel == "stylesheet"){
+            importElms.push(elm)
+        }
+    })
+    importElms.forEach(elm=>{
+        
+    })
+}
 document.getElementById('__main').innerHTML =convertObjectToDom(root).replace('${__children}',genChildren(root))
+
 var docRoot = document.getElementById(root.id)
 //console.log(genChildren(root))
 fs.writeFileSync(path.join(__dirname,args.outFile+".html"),document.getElementsByTagName('html')[0].outerHTML)
