@@ -1,0 +1,49 @@
+<script>
+    var assetsObj = JSON.parse(${assets})
+    //Assets object should look like {"testComp":{"type":"component","properties":{"url":"file://home/darksystem/Projects/eupnea-settings/devkit/components/text.html","value":"test"}},"mainScript":{"type":"script","url":"www.example.com"}}
+    window.getAssets = async ()=> {
+        if(window.__assetsLoaded==true){
+            return window.__assets
+        }else{
+            window.__assetsLoaded=false
+        }
+        window.__assets ={}
+        var assets = window.__assets
+        assetsObj.keys().forEach(assetName => {
+            var asset = assetsObj[assetName]
+            if (asset.type == "component") {
+                var componentProps = asset.properties
+                var fileReq = await fetch(componentProps.url)
+                var compHtml = await fileReq.text()
+                componentProps.type = componentProps.url.split('/').at(-1).replace('.html', '')
+                delete componentProps.url
+                for (var i = 0; Object.keys(obj).length > i; i++) {
+                    if (!(Object.keys(obj)[i] == 'type')) {
+                        compHtml = compHtml.replaceAll('${' + Object.keys(obj)[i] + '}', obj[Object.keys(obj)[i]])
+                    } else { continue }
+                }
+                assets[assetName]= compHtml//.replaceAll('${__children}','')
+            }else if (asset.type =="image"){
+                var fileReq =await fetch(asset.url)
+                assets[assetName]= await fileReq.blob()
+            }else{
+                var fileReq =await fetch(asset.url)
+                assets[assetName]= await fileReq.text()  
+            }
+        });
+        window.__assetsLoaded=true
+        return assets
+    }
+    window.insertComponent = function(parent,componentName,children){
+        var comp = document.createRange().createContextualFragment(window.__assets[componentName].replaceAll('${__children}',children))
+        comp.name = componentName
+        parent.appendChild(comp)
+    }
+    window.insertImage = function(parent,imageName) {
+        var img = document.createElement('img')
+        img.src = URL.createObjectURL(window.__assets[imageName])
+        img.name = imageName
+        parent.appendChild(img)
+        return img
+    }
+</script>

@@ -1,0 +1,17 @@
+{
+    "root":{
+        "id":"root",
+        "type":"root",
+        "children":[
+            {
+                "type":"settingsPage",
+                "children":[
+                    {
+                        "type":"importPage",
+                        "src":"devkit/containers.html"
+                    }
+                ]
+            }
+        ]
+    }
+}
