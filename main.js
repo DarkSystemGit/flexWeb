@@ -6,7 +6,7 @@ var args = processArgs(['readFile', 'outFile'])
 var dom = new JSDOM('<!DOCTYPE html><html><head id="head"></head><body id="__main"></body></html>')
 const document = dom.window.document
 var appFile = JSON.parse(fs.readFileSync(path.join(__dirname, args.readFile + '.json')).toString())
-var componentList = fs.readdirSync(path.join(__dirname, '/components'))
+var componentList = fs.readdirSync(path.join(__dirname, '/components'),{recursive:true})
 var root = appFile.root
 var app = {}
 var xml = new JSDOM(fs.readFileSync(path.join(__dirname, 'app.xml')))
@@ -23,12 +23,22 @@ function processArgs(names) {
 }
 function convertObjectToDom(obj) {
     if (componentList.includes(`${obj.type.replace('.', '/')}.html`)) {
+        if(compHtml.split(' ')[0]=='@include'){
+            try{
+                var include = compHtml.split('\n')[0].split(' ')[1]
+            }catch(e){}
+           
+        }
+        if(fs.existsSync(path.join(__dirname, '/components/', `${path.dirname(obj.type.replace('.', '/'))}/${include}.js`))){
+            compHtml =require(path.join(__dirname, '/components/', `${path.dirname(obj.type.replace('.', '/'))}/${include}.js`))(compHtml,obj)
+        }
         var compHtml = fs.readFileSync(path.join(__dirname, '/components/', `${obj.type.replace('.', '/')}.html`)).toString()
         for (var i = 0; Object.keys(obj).length > i; i++) {
             if (!(Object.keys(obj)[i] == 'type')) {
                 compHtml = compHtml.replaceAll('${' + Object.keys(obj)[i] + '}', obj[Object.keys(obj)[i]])
             } else { continue }
         }
+        
         return processImports(compHtml,path.join(__dirname, '/components/', `${obj.type.replace('.', '/')}.html`))
     } else { return }
 }
